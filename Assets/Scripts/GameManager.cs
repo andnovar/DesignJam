@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour {
             {
            
             Collider2D[] hits = Physics2D.OverlapCircleAll(Camera.main.ScreenToWorldPoint(Input.mousePosition),0.1f);
-            if (hits.Length>0 && hits[0]!= null && hits[0].tag!="Map")
+            if (hits.Length>0 && hits[0]!= null && hits[0].tag=="Player")
                 {
                 if (activeObject != null)
                 activeObject.GetComponent<BoatScript>().selected = false;
