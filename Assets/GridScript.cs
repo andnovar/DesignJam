@@ -29,7 +29,7 @@ public class GridScript : MonoBehaviour {
 
     IEnumerator Enable ()
         {
-        while (gridSprite.color.a < 0.8f)
+        while (gridSprite.color.a <= 1f)
             {
             Color alpha = gridSprite.color;
             alpha.a += 0.1f;

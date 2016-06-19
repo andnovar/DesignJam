@@ -13,6 +13,7 @@ public class BoatScript : MonoBehaviour {
     [HideInInspector] public bool selected;
     GameObject boatAttributes,fuelBar;
     RaycastHit hit;
+    bool moving = false;
 
 	// Use this for initialization
 	void Start () {
@@ -32,9 +33,11 @@ public class BoatScript : MonoBehaviour {
             Debug.Log("Selected");
             moveToPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             moveToPosition.z = transform.position.z;
+            if (moving == false)
             StartCoroutine("ReduceFuel");
+            moving = true;
             }
-        if (transform.position != moveToPosition)
+        if (transform.position != moveToPosition && fuelBar.GetComponent<RectTransform>().sizeDelta.x>0.01f)
             {
             Debug.DrawRay(transform.position,transform.forward*10);
             Collider2D[] hits = Physics2D.OverlapCircleAll((transform.position - new Vector3(0,0,3f)),1f);
@@ -44,8 +47,12 @@ public class BoatScript : MonoBehaviour {
                     {
                     if (grid.gameObject.GetComponent<GridScript>())
                         grid.gameObject.GetComponent<GridScript>().Disable();
-                    }
+                    if (grid.gameObject.tag == "Consumable")
+                        Destroy(grid.gameObject);
+
                 }
+                }
+           
             transform.position = Vector3.Lerp(transform.position,moveToPosition,movesSpeed * Time.deltaTime);
             }
 
@@ -56,9 +63,16 @@ public class BoatScript : MonoBehaviour {
         while (Vector3.Distance(transform.position,moveToPosition)>0.5f)
             {
             currentFuel -= 0.01f;
-            fuelBar.GetComponent<RectTransform>().sizeDelta = new Vector2(fuelBar.GetComponent<RectTransform>().sizeDelta.x * currentFuel / fuel,fuelBar.GetComponent<RectTransform>().sizeDelta.y);
-           // Debug.Log(currentFuel);
+            fuelBar.GetComponent<RectTransform>().sizeDelta = new Vector2(fuelBar.GetComponent<RectTransform>().sizeDelta.x * (currentFuel / fuel),fuelBar.GetComponent<RectTransform>().sizeDelta.y);
+          //  Debug.Log(currentFuel/fuel);
              yield return new WaitForSeconds(0.1f);
             }
+        moving = false;
         }
+
+    public void OnCollisionEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Consumable")
+            Destroy(other.gameObject);
+    }
 }
